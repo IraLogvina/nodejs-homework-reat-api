@@ -5,7 +5,7 @@ const Contact = require('../../model/contacts');
 
 const getContactById = async(req, res)=> {
     const {id} = req.params;
-    const result = await Contact.findById(id);
+    const result = await Contact.getContactById(id);
     if(!result){
         throw new NotFound(`Contact with id=${id} not found`);
     }
