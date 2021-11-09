@@ -3,11 +3,11 @@
 const express = require("express");
 
 const {contacts: ctrl} = require("../../controllers");
-/*
-const ctrl = require("../../controllers").products;
-*/
+
+// const ctrl = require("../../controllers").contacts;
+
 const {validation, controllerWrapper} = require("../../middlewares");
-const {joiSchema} = require("../../model/contact")
+const {joiSchema} = require("../../schema/contactModel")
 
 const router = express.Router();
 
@@ -20,5 +20,7 @@ router.post("/", validation(joiSchema), controllerWrapper(ctrl.addContact));
 router.put("/:id", validation(joiSchema), controllerWrapper(ctrl.updateContact))
 
 router.delete("/:id", controllerWrapper(ctrl.removeContact));
+
+router.patch('/:contactId/favorite', );
 
 module.exports = router;
