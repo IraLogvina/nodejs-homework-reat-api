@@ -10,3 +10,4 @@ db.then(() => {
 }).catch((err) => {
   console.log(`Server not run. Error: ${err.message}`);
 });
+
