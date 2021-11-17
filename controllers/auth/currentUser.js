@@ -20,5 +20,4 @@ const currentUser = async (req, res) => {
   });
 };
 
-
-  module.exports = currentUser;
+module.exports = currentUser;
