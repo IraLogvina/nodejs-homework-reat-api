@@ -1,28 +1,39 @@
-const User = require("../../schema/user");
-const fs = require("fs/promises");
-const { NotFound } = require("http-errors");
-const path = require("path");
 
-const userDir = path.join(__dirname, "../../public/avatars");
+
+const fs = require('fs/promises');
+const path = require('path');
+const { User } = require('../../schema/user');
+const sendSuccessRes = require('../../utils/sendSuccessRes');
+const imageResize = require('../../utils/imageResize');
 
 const updateIMG = async (req, res) => {
-  const userId = String(req.user._id);
-  const { path: tempUpload, originalname } = req.file;
+  const { _id, email, subscription } = req.user;
+  const { originalname, path: oldPath } = req.file;
+
+  const uploadPath = path.join(
+    __dirname,
+    '../../',
+    'public/avatars',
+    originalname,
+  );
+
+  const [extn, name] = originalname.split('.').reverse();
+  const avatarURL = path.join('/avatars', `${name}-${_id}.${extn}`);
+
   try {
-    const resultUpload = path.join(userDir, originalname);
-    await fs.rename(tempUpload, resultUpload);
-    const image = path.join("/avatars", originalname);
-    await User.findByIdAndUpdate(userId, { avatarURL: image }, { new: true });
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        avatarURL: image,
+    await imageResize(oldPath, 250, 250);
+    await fs.rename(oldPath, uploadPath);
+    await User.findByIdAndUpdate(_id, { avatarURL }, { new: true });
+    sendSuccessRes(
+      res,
+      {
+        user: { _id, email, subscription, avatarURL },
+        message: 'Success',
       },
-    });
+      200,
+    );
   } catch (error) {
-    fs.unlink(tempUpload);
+    await fs.unlink(oldPath);
   }
 };
-
 module.exports = updateIMG;
