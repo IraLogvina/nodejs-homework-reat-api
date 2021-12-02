@@ -1,15 +1,17 @@
 const { Conflict } = require("http-errors");
+const gravatar = require("gravatar");
 
 const { User } = require("../../schema/user");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
+  const image = gravatar.url(email);
   const user = await User.findOne({ email });
   if (user) {
     throw new Conflict(`User with email=${email} already exist`);
   }
 
-  const newUser = new User({ email });
+  const newUser = new User({ email, avatarURL: image});
 
   newUser.setPassword(password);
 
